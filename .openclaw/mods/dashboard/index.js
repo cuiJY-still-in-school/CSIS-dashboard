@@ -1170,7 +1170,7 @@ module.exports = {
     <div class="controls">
       <h3>Dashboard Controls</h3>
       <p>Each mod has two panels: <strong>Configure</strong> (for values) and <strong>Main</strong> (for switches/state).</p>
-      <div class="drag-hint">Drag components to reposition</div>
+      <div class="drag-hint">Drag components to reposition (coming soon)</div>
     </div>
   </div>
   
