@@ -1,0 +1,21 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "description": "CSIS Dashboard - GUI framework for OpenClaw mods management",
+  "type": "library",
+  "author": "CSIS",
+  "license": "MIT",
+  "openclaw": {
+    "version": ">=2026.4.0",
+    "api": "1.0"
+  },
+  "entry": "index.js",
+  "permissions": [
+    "gateway:read",
+    "gateway:write",
+    "mods:read", 
+    "mods:write",
+    "config:read",
+    "config:write"
+  ]
+}
