@@ -147,3 +147,4 @@ CSIS/
 !/manifest.json
 !/server.js
 !/package.json
+!/examples/
