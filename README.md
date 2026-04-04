@@ -37,21 +37,62 @@ roter install github:cuiJY-still-in-school/CSIS-dashboard/examples/test-mod
 ```
 
 ### Method 2: Manual Installation
-1. **Install dashboard mod**:
-   ```bash
-   # Copy dashboard directory to ~/.openclaw/mods/
-   cp -r /path/to/dashboard ~/.openclaw/mods/
-   ```
 
-2. **Install test mod** (example):
-   ```bash
-   cp -r /path/to/test-mod ~/.openclaw/mods/
-   ```
+#### Option A: Using git clone
+```bash
+# Clone the repository
+git clone https://github.com/cuiJY-still-in-school/CSIS-dashboard.git
+cd CSIS-dashboard
 
-3. **Start OpenClaw with roter**:
+# Copy to OpenClaw mods directory
+cp -r . ~/.openclaw/mods/dashboard
+
+# (Optional) Install test mod example
+cp -r examples/test-mod ~/.openclaw/mods/test-mod
+```
+
+#### Option B: Using curl (no git required)
+```bash
+# Download dashboard as zip
+curl -L -o dashboard.zip https://github.com/cuiJY-still-in-school/CSIS-dashboard/archive/refs/heads/master.zip
+
+# Extract and copy
+unzip dashboard.zip
+cd CSIS-dashboard-master
+cp -r . ~/.openclaw/mods/dashboard
+
+# Cleanup
+cd ..
+rm -rf dashboard.zip CSIS-dashboard-master
+
+# (Optional) Download and install test mod
+curl -L -o test-mod.zip https://github.com/cuiJY-still-in-school/CSIS-dashboard/archive/refs/heads/master.zip
+unzip -j test-mod.zip "CSIS-dashboard-master/examples/test-mod/*" -d ~/.openclaw/mods/test-mod
+rm test-mod.zip
+```
+
+#### Option C: Download individual files
+```bash
+# Create mod directory
+mkdir -p ~/.openclaw/mods/dashboard
+
+# Download essential files
+curl -L -o ~/.openclaw/mods/dashboard/manifest.json https://raw.githubusercontent.com/cuiJY-still-in-school/CSIS-dashboard/master/manifest.json
+curl -L -o ~/.openclaw/mods/dashboard/index.js https://raw.githubusercontent.com/cuiJY-still-in-school/CSIS-dashboard/master/index.js
+curl -L -o ~/.openclaw/mods/dashboard/components.js https://raw.githubusercontent.com/cuiJY-still-in-school/CSIS-dashboard/master/components.js
+curl -L -o ~/.openclaw/mods/dashboard/events.js https://raw.githubusercontent.com/cuiJY-still-in-school/CSIS-dashboard/master/events.js
+curl -L -o ~/.openclaw/mods/dashboard/server.js https://raw.githubusercontent.com/cuiJY-still-in-school/CSIS-dashboard/master/server.js
+
+# Create config directory
+mkdir -p ~/.openclaw/mods/dashboard/config
+curl -L -o ~/.openclaw/mods/dashboard/config/schema.json https://raw.githubusercontent.com/cuiJY-still-in-school/CSIS-dashboard/master/config/schema.json
+```
+
+### Next Steps
+1. **Start OpenClaw with roter**:
    The dashboard will automatically start on port 3000.
 
-4. **Access dashboard**:
+2. **Access dashboard**:
    Open http://localhost:3000 in your browser.
 
 ## Usage Example
