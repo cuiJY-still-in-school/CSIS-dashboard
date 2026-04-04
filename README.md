@@ -29,11 +29,16 @@ dashboard/
 
 ### Method 1: Install via roter (Recommended)
 ```bash
+# If you're in China and GitHub is blocked, set proxy first:
+export https_proxy=socks5://localhost:7897
+export http_proxy=socks5://localhost:7897
+
 # Install dashboard from GitHub
 roter install github:cuiJY-still-in-school/CSIS-dashboard
 
 # Install test mod (example)
-roter install github:cuiJY-still-in-school/CSIS-dashboard/examples/test-mod
+# Note: Test mod is in a separate repository
+roter install github:cuiJY-still-in-school/CSIS-dashboard-test-mod
 ```
 
 ### Method 2: Manual Installation
@@ -53,6 +58,10 @@ cp -r examples/test-mod ~/.openclaw/mods/test-mod
 
 #### Option B: Using curl (no git required)
 ```bash
+# For users in China with proxy (replace 7897 with your proxy port):
+export https_proxy=socks5://localhost:7897
+export http_proxy=socks5://localhost:7897
+
 # Download dashboard as zip
 curl -L -o dashboard.zip https://github.com/cuiJY-still-in-school/CSIS-dashboard/archive/refs/heads/master.zip
 
@@ -66,13 +75,20 @@ cd ..
 rm -rf dashboard.zip CSIS-dashboard-master
 
 # (Optional) Download and install test mod
-curl -L -o test-mod.zip https://github.com/cuiJY-still-in-school/CSIS-dashboard/archive/refs/heads/master.zip
-unzip -j test-mod.zip "CSIS-dashboard-master/examples/test-mod/*" -d ~/.openclaw/mods/test-mod
-rm test-mod.zip
+curl -L -o test-mod.zip https://github.com/cuiJY-still-in-school/CSIS-dashboard-test-mod/archive/refs/heads/master.zip
+unzip test-mod.zip
+cd CSIS-dashboard-test-mod-master
+cp -r . ~/.openclaw/mods/test-mod
+cd ..
+rm -rf test-mod.zip CSIS-dashboard-test-mod-master
 ```
 
 #### Option C: Download individual files
 ```bash
+# For users in China with proxy (replace 7897 with your proxy port):
+export https_proxy=socks5://localhost:7897
+export http_proxy=socks5://localhost:7897
+
 # Create mod directory
 mkdir -p ~/.openclaw/mods/dashboard
 
