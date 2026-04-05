@@ -1348,78 +1348,77 @@ module.exports = {
        }
        
        // Table component
-      if (comp.type === 'Table') {
-        const { columns = [], data = [], pagination = false, pageSize = 10 } = props;
-        const displayData = pagination ? data.slice(0, pageSize) : data;
-        return \`
-          <div class="dashboard-table-container" data-component-type="Table">
-            <table class="dashboard-table">
-              <thead>
-                <tr>
-                  \${columns.map(col => \`<th>\${col}</th>\`).join('')}
-                </tr>
-              </thead>
-              <tbody>
-                \${displayData.map((row, i) => \`
-                  <tr>
-                    \${columns.map(col => \`<td>\${formatValue(row[col])}</td>\`).join('')}
-                  </tr>
-                \`).join('')}
-              </tbody>
-            </table>
-            \${pagination && data.length > pageSize ? \`
-              <div style="margin-top: 12px; text-align: center; color: var(--text-secondary); font-size: 14px;">
-                Showing \${pageSize} of \${data.length} rows
-              </div>
-            \` : ''}
-          </div>
-        \`;
-      }
+       if (comp.type === 'Table') {
+         const { columns = [], data = [], pagination = false, pageSize = 10 } = props;
+         const displayData = pagination ? data.slice(0, pageSize) : data;
+         
+         // Build headers
+         const headersHtml = columns.map(col => '<th>' + col + '</th>').join('');
+         
+         // Build rows
+         const rowsHtml = displayData.map(row => {
+           const cellsHtml = columns.map(col => '<td>' + formatValue(row[col]) + '</td>').join('');
+           return '<tr>' + cellsHtml + '</tr>';
+         }).join('');
+         
+         // Build pagination footer if needed
+         let paginationHtml = '';
+         if (pagination && data.length > pageSize) {
+           paginationHtml = '<div style="margin-top: 12px; text-align: center; color: var(--text-secondary); font-size: 14px;">' +
+                            'Showing ' + pageSize + ' of ' + data.length + ' rows' +
+                            '</div>';
+         }
+         
+         return '<div class="dashboard-table-container" data-component-type="Table">' +
+                '<table class="dashboard-table">' +
+                '<thead><tr>' + headersHtml + '</tr></thead>' +
+                '<tbody>' + rowsHtml + '</tbody>' +
+                '</table>' +
+                paginationHtml +
+                '</div>';
+       }
       
-      // Card component
-      if (comp.type === 'Card') {
-        const { title = '', content = '', actions = [] } = props;
-        return \`
-          <div class="dashboard-card" data-component-type="Card">
-            \${title ? '<div class="dashboard-card-title">' + title + '</div>' : ''}
-            \${content ? '<div class="dashboard-card-content">' + content + '</div>' : ''}
-            \${actions.length > 0 ? \`
-              <div class="dashboard-card-actions">
-                \${actions.map(action => \`
-                  <button class="dashboard-btn dashboard-btn-secondary" data-event-id="\${action.eventId || ''}">
-                    \${action.label || 'Action'}
-                  </button>
-                \`).join('')}
-              </div>
-            \` : ''}
-          </div>
-        \`;
-      }
+       // Card component
+       if (comp.type === 'Card') {
+         const { title = '', content = '', actions = [] } = props;
+         let html = '<div class="dashboard-card" data-component-type="Card">';
+         if (title) html += '<div class="dashboard-card-title">' + title + '</div>';
+         if (content) html += '<div class="dashboard-card-content">' + content + '</div>';
+         if (actions.length > 0) {
+           html += '<div class="dashboard-card-actions">';
+           actions.forEach(action => {
+             html += '<button class="dashboard-btn dashboard-btn-secondary" data-event-id="' + (action.eventId || '') + '">' +
+                     (action.label || 'Action') + '</button>';
+           });
+           html += '</div>';
+         }
+         html += '</div>';
+         return html;
+       }
       
-      // Chart component (simple visualization)
-      if (comp.type === 'Chart') {
-        const { type = 'bar', data = {}, options = {} } = props;
-        const chartId = \`chart_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
-        return \`
-          <div class="dashboard-chart" data-component-type="Chart" data-chart-type="\${type}" id="\${chartId}">
-            <div class="dashboard-chart-title">\${type.charAt(0).toUpperCase() + type.slice(1)} Chart</div>
-            <div class="dashboard-chart-container">
-              <!-- Chart will be rendered here -->
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
-                Chart: \${type} (data preview)
-              </div>
-            </div>
-          </div>
-        \`;
-      }
+       // Chart component (simple visualization)
+       if (comp.type === 'Chart') {
+         const { type = 'bar', data = {}, options = {} } = props;
+         const chartId = 'chart_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+         const typeDisplay = type.charAt(0).toUpperCase() + type.slice(1);
+         return '<div class="dashboard-chart" data-component-type="Chart" data-chart-type="' + type + '" id="' + chartId + '">' +
+                '<div class="dashboard-chart-title">' + typeDisplay + ' Chart</div>' +
+                '<div class="dashboard-chart-container">' +
+                '<!-- Chart will be rendered here -->' +
+                '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">' +
+                'Chart: ' + type + ' (data preview)' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+       }
       
       // Fallback: display all props
-      return Object.entries(props).map(([key, val]) => \`
-        <div style="display: flex; justify-content: space-between; padding: 2px 0;">
-          <span style="color: #94a3b8;">\${key}:</span>
-          <span style="font-family: monospace;">\${formatValue(val)}</span>
-        </div>
-      \`).join('');
+       return Object.entries(props).map(([key, val]) => {
+         return '<div style="display: flex; justify-content: space-between; padding: 2px 0;">' +
+                '<span style="color: #94a3b8;">' + key + ':</span>' +
+                '<span style="font-family: monospace;">' + formatValue(val) + '</span>' +
+                '</div>';
+       }).join('');
     }
     
     // Attach event listeners to interactive components
@@ -1732,13 +1731,13 @@ module.exports = {
             const newRowStart = clampedRow + 1;
             const newRowEnd = newRowStart + rowSpan;
             
-            componentElem.style.gridColumn = \`\${newColumnStart} / \${newColumnEnd}\`;
-            componentElem.style.gridRow = \`\${newRowStart} / \${newRowEnd}\`;
+            componentElem.style.gridColumn = newColumnStart + ' / ' + newColumnEnd;
+            componentElem.style.gridRow = newRowStart + ' / ' + newRowEnd;
             
             // Show notification
             const notification = document.createElement('div');
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 12px 20px; border-radius: 8px; z-index: 1000;';
-            notification.textContent = \`Moved \${componentId} to column \${newColumnStart}, row \${newRowStart}\`;
+            notification.textContent = 'Moved ' + componentId + ' to column ' + newColumnStart + ', row ' + newRowStart;
             document.body.appendChild(notification);
             
             setTimeout(() => notification.remove(), 2000);
