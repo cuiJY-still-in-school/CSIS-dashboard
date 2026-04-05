@@ -1170,7 +1170,7 @@ module.exports = {
     <div class="controls">
       <h3>Dashboard Controls</h3>
       <p>Each mod has two panels: <strong>Configure</strong> (for values) and <strong>Main</strong> (for switches/state).</p>
-      <div class="drag-hint">Drag components to reposition (coming soon)</div>
+      <div class="drag-hint">Drag components to reposition them on the grid</div>
     </div>
   </div>
   
@@ -1250,196 +1250,175 @@ module.exports = {
       if (comp.type === 'Button') {
         const { label = 'Button', variant = 'primary', disabled = false } = props;
         const variantClass = variant === 'primary' ? 'dashboard-btn-primary' : variant === 'secondary' ? 'dashboard-btn-secondary' : 'dashboard-btn-danger';
-        return \`
-          <button class="dashboard-btn \${variantClass}" data-event-id="\${eventId || ''}" data-component-type="Button" \${disabled ? 'disabled' : ''}>
-            \${label}
-          </button>
-        \`;
+         return '<button class="dashboard-btn ' + variantClass + '" data-event-id="' + (eventId || '') + '" data-component-type="Button"' + (disabled ? ' disabled' : '') + '>' + label + '</button>';
       }
       
       // Switch component
       if (comp.type === 'Switch') {
         const { label = '', checked = false, disabled = false } = props;
-        return \`
-          <label class="dashboard-switch" data-component-type="Switch">
-            <input type="checkbox" \${checked ? 'checked' : ''} \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-            <span class="dashboard-switch-slider"></span>
-            \${label ? '<span class="dashboard-switch-label">' + label + '</span>' : ''}
-          </label>
-        \`;
+         return '<label class="dashboard-switch" data-component-type="Switch">' +
+                '<input type="checkbox"' + (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                '<span class="dashboard-switch-slider"></span>' +
+                (label ? '<span class="dashboard-switch-label">' + label + '</span>' : '') +
+                '</label>';
       }
       
       // Input component
       if (comp.type === 'Input') {
         const { label = '', value = '', type = 'text', placeholder = '', disabled = false } = props;
-        return \`
-          <div class="dashboard-input-group" data-component-type="Input">
-            \${label ? '<div class="dashboard-input-label">' + label + '</div>' : ''}
-            <input class="dashboard-input" type="\${type}" value="\${value}" placeholder="\${placeholder}" 
-                   \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-          </div>
-        \`;
+         return '<div class="dashboard-input-group" data-component-type="Input">' +
+                (label ? '<div class="dashboard-input-label">' + label + '</div>' : '') +
+                '<input class="dashboard-input" type="' + type + '" value="' + value + '" placeholder="' + placeholder + '"' +
+                (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                '</div>';
       }
       
       // Select component
       if (comp.type === 'Select') {
         const { label = '', value = '', options = [], disabled = false } = props;
-        return \`
-          <div class="dashboard-select-group" data-component-type="Select">
-            \${label ? '<div class="dashboard-select-label">' + label + '</div>' : ''}
-            <select class="dashboard-select" \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-              \${options.map(opt => \`
-                <option value="\${opt.value}" \${opt.value === value ? 'selected' : ''}>
-                  \${opt.label || opt.value}
-                </option>
-              \`).join('')}
-            </select>
-          </div>
-        \`;
+         const optionsHtml = options.map(opt => {
+           return '<option value="' + opt.value + '"' + (opt.value === value ? ' selected' : '') + '>' +
+                  (opt.label || opt.value) + '</option>';
+         }).join('');
+         return '<div class="dashboard-select-group" data-component-type="Select">' +
+                (label ? '<div class="dashboard-select-label">' + label + '</div>' : '') +
+                '<select class="dashboard-select"' + (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                optionsHtml +
+                '</select></div>';
       }
       
       // Text component
       if (comp.type === 'Text') {
         const { content = '', variant = 'body', align = 'left' } = props;
         const tagName = variant === 'heading' ? 'h3' : variant === 'subheading' ? 'h4' : 'div';
-        const style = \`text-align: \${align}; color: var(--text-primary); margin: 8px 0;\`;
-        return \`<\${tagName} style="\${style}" data-component-type="Text">\${content}</\${tagName}>\`;
+         const style = 'text-align: ' + align + '; color: var(--text-primary); margin: 8px 0;';
+         return '<' + tagName + ' style="' + style + '" data-component-type="Text">' + content + '</' + tagName + '>';
       }
       
       // Status component
       if (comp.type === 'Status') {
         const { status = 'info', message = '', showIcon = true } = props;
-        const statusClass = \`dashboard-status dashboard-status-\${status}\`;
-        const icon = showIcon ? {
-          info: 'ℹ️',
-          success: '✅',
-          warning: '⚠️',
-          error: '❌'
-        }[status] || 'ℹ️' : '';
-        return \`
-          <div class="\${statusClass}" data-component-type="Status">
-            \${icon ? '<span class="dashboard-status-icon">' + icon + '</span>' : ''}
-            <span>\${message}</span>
-          </div>
-        \`;
+         const statusClass = 'dashboard-status dashboard-status-' + status;
+         const icon = showIcon ? {
+           info: 'ℹ️',
+           success: '✅',
+           warning: '⚠️',
+           error: '❌'
+         }[status] || 'ℹ️' : '';
+         return '<div class="' + statusClass + '" data-component-type="Status">' +
+                (icon ? '<span class="dashboard-status-icon">' + icon + '</span>' : '') +
+                '<span>' + message + '</span></div>';
       }
       
       // Progress component
       if (comp.type === 'Progress') {
         const { label = '', value = 0, max = 100, variant = 'default' } = props;
         const percentage = Math.max(0, Math.min(100, (value / max) * 100));
-        const progressClass = \`dashboard-progress \${variant !== 'default' ? 'dashboard-progress-' + variant : ''}\`;
-        return \`
-          <div class="\${progressClass}" data-component-type="Progress">
-            <div class="dashboard-progress-label">
-              <span>\${label}</span>
-              <span>\${Math.round(percentage)}%</span>
-            </div>
-            <div class="dashboard-progress-bar">
-              <div class="dashboard-progress-fill" style="width: \${percentage}%"></div>
-            </div>
-          </div>
-        \`;
+         const progressClass = 'dashboard-progress' + (variant !== 'default' ? ' dashboard-progress-' + variant : '');
+         return '<div class="' + progressClass + '" data-component-type="Progress">' +
+                '<div class="dashboard-progress-label">' +
+                '<span>' + label + '</span>' +
+                '<span>' + Math.round(percentage) + '%</span>' +
+                '</div>' +
+                '<div class="dashboard-progress-bar">' +
+                '<div class="dashboard-progress-fill" style="width: ' + percentage + '%"></div>' +
+                '</div>' +
+                '</div>';
        }
        
        // Slider component
        if (comp.type === 'Slider') {
          const { label = '', value = 0, min = 0, max = 100, step = 1, disabled = false } = props;
-         return \`
-           <div class="dashboard-slider-group" data-component-type="Slider">
-             \${label ? '<div class="dashboard-slider-label">' + label + '</div>' : ''}
-             <input class="dashboard-slider" type="range" 
-                    min="\${min}" max="\${max}" step="\${step}" value="\${value}"
-                    \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-             <div class="dashboard-slider-value">\${value}</div>
-           </div>
-         \`;
+          return '<div class="dashboard-slider-group" data-component-type="Slider">' +
+                 (label ? '<div class="dashboard-slider-label">' + label + '</div>' : '') +
+                 '<input class="dashboard-slider" type="range" ' +
+                 'min="' + min + '" max="' + max + '" step="' + step + '" value="' + value + '"' +
+                 (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                 '<div class="dashboard-slider-value">' + value + '</div>' +
+                 '</div>';
        }
        
        // Checkbox component
        if (comp.type === 'Checkbox') {
          const { label = '', checked = false, disabled = false } = props;
-         return \`
-           <label class="dashboard-checkbox" data-component-type="Checkbox">
-             <input type="checkbox" \${checked ? 'checked' : ''} \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-             \${label ? '<span class="dashboard-checkbox-label">' + label + '</span>' : ''}
-           </label>
-         \`;
+          return '<label class="dashboard-checkbox" data-component-type="Checkbox">' +
+                 '<input type="checkbox"' + (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                 (label ? '<span class="dashboard-checkbox-label">' + label + '</span>' : '') +
+                 '</label>';
        }
        
        // Table component
-      if (comp.type === 'Table') {
-        const { columns = [], data = [], pagination = false, pageSize = 10 } = props;
-        const displayData = pagination ? data.slice(0, pageSize) : data;
-        return \`
-          <div class="dashboard-table-container" data-component-type="Table">
-            <table class="dashboard-table">
-              <thead>
-                <tr>
-                  \${columns.map(col => \`<th>\${col}</th>\`).join('')}
-                </tr>
-              </thead>
-              <tbody>
-                \${displayData.map((row, i) => \`
-                  <tr>
-                    \${columns.map(col => \`<td>\${formatValue(row[col])}</td>\`).join('')}
-                  </tr>
-                \`).join('')}
-              </tbody>
-            </table>
-            \${pagination && data.length > pageSize ? \`
-              <div style="margin-top: 12px; text-align: center; color: var(--text-secondary); font-size: 14px;">
-                Showing \${pageSize} of \${data.length} rows
-              </div>
-            \` : ''}
-          </div>
-        \`;
-      }
+       if (comp.type === 'Table') {
+         const { columns = [], data = [], pagination = false, pageSize = 10 } = props;
+         const displayData = pagination ? data.slice(0, pageSize) : data;
+         
+         // Build headers
+         const headersHtml = columns.map(col => '<th>' + col + '</th>').join('');
+         
+         // Build rows
+         const rowsHtml = displayData.map(row => {
+           const cellsHtml = columns.map(col => '<td>' + formatValue(row[col]) + '</td>').join('');
+           return '<tr>' + cellsHtml + '</tr>';
+         }).join('');
+         
+         // Build pagination footer if needed
+         let paginationHtml = '';
+         if (pagination && data.length > pageSize) {
+           paginationHtml = '<div style="margin-top: 12px; text-align: center; color: var(--text-secondary); font-size: 14px;">' +
+                            'Showing ' + pageSize + ' of ' + data.length + ' rows' +
+                            '</div>';
+         }
+         
+         return '<div class="dashboard-table-container" data-component-type="Table">' +
+                '<table class="dashboard-table">' +
+                '<thead><tr>' + headersHtml + '</tr></thead>' +
+                '<tbody>' + rowsHtml + '</tbody>' +
+                '</table>' +
+                paginationHtml +
+                '</div>';
+       }
       
-      // Card component
-      if (comp.type === 'Card') {
-        const { title = '', content = '', actions = [] } = props;
-        return \`
-          <div class="dashboard-card" data-component-type="Card">
-            \${title ? '<div class="dashboard-card-title">' + title + '</div>' : ''}
-            \${content ? '<div class="dashboard-card-content">' + content + '</div>' : ''}
-            \${actions.length > 0 ? \`
-              <div class="dashboard-card-actions">
-                \${actions.map(action => \`
-                  <button class="dashboard-btn dashboard-btn-secondary" data-event-id="\${action.eventId || ''}">
-                    \${action.label || 'Action'}
-                  </button>
-                \`).join('')}
-              </div>
-            \` : ''}
-          </div>
-        \`;
-      }
+       // Card component
+       if (comp.type === 'Card') {
+         const { title = '', content = '', actions = [] } = props;
+         let html = '<div class="dashboard-card" data-component-type="Card">';
+         if (title) html += '<div class="dashboard-card-title">' + title + '</div>';
+         if (content) html += '<div class="dashboard-card-content">' + content + '</div>';
+         if (actions.length > 0) {
+           html += '<div class="dashboard-card-actions">';
+           actions.forEach(action => {
+             html += '<button class="dashboard-btn dashboard-btn-secondary" data-event-id="' + (action.eventId || '') + '">' +
+                     (action.label || 'Action') + '</button>';
+           });
+           html += '</div>';
+         }
+         html += '</div>';
+         return html;
+       }
       
-      // Chart component (simple visualization)
-      if (comp.type === 'Chart') {
-        const { type = 'bar', data = {}, options = {} } = props;
-        const chartId = \`chart_\${Date.now()}_\${Math.random().toString(36).substr(2, 9)}\`;
-        return \`
-          <div class="dashboard-chart" data-component-type="Chart" data-chart-type="\${type}" id="\${chartId}">
-            <div class="dashboard-chart-title">\${type.charAt(0).toUpperCase() + type.slice(1)} Chart</div>
-            <div class="dashboard-chart-container">
-              <!-- Chart will be rendered here -->
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
-                Chart: \${type} (data preview)
-              </div>
-            </div>
-          </div>
-        \`;
-      }
+       // Chart component (simple visualization)
+       if (comp.type === 'Chart') {
+         const { type = 'bar', data = {}, options = {} } = props;
+         const chartId = 'chart_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+         const typeDisplay = type.charAt(0).toUpperCase() + type.slice(1);
+         return '<div class="dashboard-chart" data-component-type="Chart" data-chart-type="' + type + '" id="' + chartId + '">' +
+                '<div class="dashboard-chart-title">' + typeDisplay + ' Chart</div>' +
+                '<div class="dashboard-chart-container">' +
+                '<!-- Chart will be rendered here -->' +
+                '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">' +
+                'Chart: ' + type + ' (data preview)' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+       }
       
       // Fallback: display all props
-      return Object.entries(props).map(([key, val]) => \`
-        <div style="display: flex; justify-content: space-between; padding: 2px 0;">
-          <span style="color: #94a3b8;">\${key}:</span>
-          <span style="font-family: monospace;">\${formatValue(val)}</span>
-        </div>
-      \`).join('');
+       return Object.entries(props).map(([key, val]) => {
+         return '<div style="display: flex; justify-content: space-between; padding: 2px 0;">' +
+                '<span style="color: #94a3b8;">' + key + ':</span>' +
+                '<span style="font-family: monospace;">' + formatValue(val) + '</span>' +
+                '</div>';
+       }).join('');
     }
     
     // Attach event listeners to interactive components
@@ -1571,32 +1550,32 @@ module.exports = {
         const gridRowStart = y + 1;
         const gridRowEnd = gridRowStart + height;
         
-        return \`
-        <div class="component" data-mod="\${component.id}" draggable="true" id="component-\${component.id}" 
-              style="grid-column: \${gridColumnStart} / \${gridColumnEnd}; grid-row: \${gridRowStart} / \${gridRowEnd};">
-          <div class="component-header">
-            <div class="component-icon">\${component.icon}</div>
-            <div class="component-title">\${component.displayName}</div>
-            <div style="font-size: 12px; color: #64748b; margin-left: auto;">⋮⋮</div>
-          </div>
-          
-          <div class="panel-section">
-            <div class="configure-panel">
-              <div class="panel-title">Configure</div>
-              <div class="panel-content">
-                \${renderPanelContent(component.configure)}
-              </div>
-            </div>
-            
-            <div class="main-panel">
-              <div class="panel-title">Main</div>
-              <div class="panel-content">
-                \${renderPanelContent(component.main)}
-              </div>
-            </div>
-          </div>
-        </div>
-      \`;
+        return [
+          '<div class="component" data-mod="' + component.id + '" draggable="true" id="component-' + component.id + '" ',
+          '      style="grid-column: ' + gridColumnStart + ' / ' + gridColumnEnd + '; grid-row: ' + gridRowStart + ' / ' + gridRowEnd + ';">',
+          '  <div class="component-header">',
+          '    <div class="component-icon">' + component.icon + '</div>',
+          '    <div class="component-title">' + component.displayName + '</div>',
+          '    <div style="font-size: 12px; color: #64748b; margin-left: auto;">⋮⋮</div>',
+          '  </div>',
+          '  ',
+          '  <div class="panel-section">',
+          '    <div class="configure-panel">',
+          '      <div class="panel-title">Configure</div>',
+          '      <div class="panel-content">',
+          '        ' + renderPanelContent(component.configure),
+          '      </div>',
+          '    </div>',
+          '    ',
+          '    <div class="main-panel">',
+          '      <div class="panel-title">Main</div>',
+          '      <div class="panel-content">',
+          '        ' + renderPanelContent(component.main),
+          '      </div>',
+          '    </div>',
+          '  </div>',
+          '</div>'
+         ].join('\n');
       }).join('');
       
       attachEventListeners();
@@ -1626,42 +1605,34 @@ module.exports = {
       
       // Check for React components first
       if (panel.components && panel.components.length > 0) {
-        return \`
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            \${panel.components.map((comp, index) => \`
-              <div style="background: rgba(100, 116, 139, 0.2); padding: 12px; border-radius: 6px; border-left: 3px solid #60a5fa;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="font-weight: 600; color: #94a3b8;">\${comp.type || 'Component'}</span>
-                  \${comp.eventId ? '<span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">Interactive</span>' : ''}
-                  <span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">
-                    React
-                  </span>
-                </div>
-                <div style="font-size: 14px; color: #cbd5e1;">
-                  \${renderComponent(comp)}
-                </div>
-              </div>
-            \`).join('')}
-            <div style="font-size: 12px; color: #64748b; text-align: center; padding: 8px;">
-              React components ready (UI coming soon)
-            </div>
-          </div>
-        \`;
+        const componentsHtml = panel.components.map(comp => {
+          return '<div style="background: rgba(100, 116, 139, 0.2); padding: 12px; border-radius: 6px; border-left: 3px solid #60a5fa;">' +
+                 '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">' +
+                 '<span style="font-weight: 600; color: #94a3b8;">' + (comp.type || 'Component') + '</span>' +
+                 (comp.eventId ? '<span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">Interactive</span>' : '') +
+                 '<span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">React</span>' +
+                 '</div>' +
+                 '<div style="font-size: 14px; color: #cbd5e1;">' +
+                 renderComponent(comp) +
+                 '</div>' +
+                 '</div>';
+        }).join('');
+        return '<div style="display: flex; flex-direction: column; gap: 12px;">' +
+               componentsHtml +
+               '<div style="font-size: 12px; color: #64748b; text-align: center; padding: 8px;">React components ready (UI coming soon)</div>' +
+               '</div>';
       }
       
       // Fallback to data object
       if (panel.data && Object.keys(panel.data).length > 0) {
         const entries = Object.entries(panel.data);
-        return \`
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            \${entries.map(([key, value]) => \`
-              <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-                <span style="color: #94a3b8;">\${key}:</span>
-                <span style="font-family: monospace;">\${formatValue(value)}</span>
-              </div>
-            \`).join('')}
-          </div>
-        \`;
+        const entriesHtml = entries.map(([key, value]) => {
+          return '<div style="display: flex; justify-content: space-between; padding: 4px 0;">' +
+                 '<span style="color: #94a3b8;">' + key + ':</span>' +
+                 '<span style="font-family: monospace;">' + formatValue(value) + '</span>' +
+                 '</div>';
+        }).join('');
+        return '<div style="display: flex; flex-direction: column; gap: 8px;">' + entriesHtml + '</div>';
       }
       
       return '<div class="placeholder">No configuration defined</div>';
@@ -1760,13 +1731,13 @@ module.exports = {
             const newRowStart = clampedRow + 1;
             const newRowEnd = newRowStart + rowSpan;
             
-            componentElem.style.gridColumn = \`\${newColumnStart} / \${newColumnEnd}\`;
-            componentElem.style.gridRow = \`\${newRowStart} / \${newRowEnd}\`;
+            componentElem.style.gridColumn = newColumnStart + ' / ' + newColumnEnd;
+            componentElem.style.gridRow = newRowStart + ' / ' + newRowEnd;
             
             // Show notification
             const notification = document.createElement('div');
             notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 12px 20px; border-radius: 8px; z-index: 1000;';
-            notification.textContent = \`Moved \${componentId} to column \${newColumnStart}, row \${newRowStart}\`;
+            notification.textContent = 'Moved ' + componentId + ' to column ' + newColumnStart + ', row ' + newRowStart;
             document.body.appendChild(notification);
             
             setTimeout(() => notification.remove(), 2000);

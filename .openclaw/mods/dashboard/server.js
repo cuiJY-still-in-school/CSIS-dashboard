@@ -331,30 +331,28 @@ async function generateDashboardHtml(context) {
         return;
       }
       
-      grid.innerHTML = components.map(component => \`
-        <div class="component" data-mod="\${component.id}">
-          <div class="component-header">
-            <div class="component-icon">\${component.icon}</div>
-            <div class="component-title">\${component.displayName}</div>
-          </div>
-          
-          <div class="panel-section">
-            <div class="configure-panel">
-              <div class="panel-title">Configure</div>
-              <div class="panel-content">
-                \${renderPanelContent(component.configure)}
-              </div>
-            </div>
-            
-            <div class="main-panel">
-              <div class="panel-title">Main</div>
-              <div class="panel-content">
-                \${renderPanelContent(component.main)}
-              </div>
-            </div>
-          </div>
-        </div>
-      \`).join('');
+       grid.innerHTML = components.map(component => {
+         return '<div class="component" data-mod="' + component.id + '">' +
+                '<div class="component-header">' +
+                '<div class="component-icon">' + component.icon + '</div>' +
+                '<div class="component-title">' + component.displayName + '</div>' +
+                '</div>' +
+                '<div class="panel-section">' +
+                '<div class="configure-panel">' +
+                '<div class="panel-title">Configure</div>' +
+                '<div class="panel-content">' +
+                renderPanelContent(component.configure) +
+                '</div>' +
+                '</div>' +
+                '<div class="main-panel">' +
+                '<div class="panel-title">Main</div>' +
+                '<div class="panel-content">' +
+                renderPanelContent(component.main) +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+       }).join('');
     }
     
     // Render panel content based on type
@@ -365,16 +363,15 @@ async function generateDashboardHtml(context) {
       
       // Simple rendering of data
       const entries = Object.entries(panel.data);
-      return \`
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-          \${entries.map(([key, value]) => \`
-            <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-              <span style="color: #94a3b8;">\${key}:</span>
-              <span style="font-family: monospace;">\${formatValue(value)}</span>
-            </div>
-          \`).join('')}
-        </div>
-      \`;
+       let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+       entries.forEach(([key, value]) => {
+         html += '<div style="display: flex; justify-content: space-between; padding: 4px 0;">' +
+                 '<span style="color: #94a3b8;">' + key + ':</span>' +
+                 '<span style="font-family: monospace;">' + formatValue(value) + '</span>' +
+                 '</div>';
+       });
+       html += '</div>';
+       return html;
     }
     
     // Format values for display
