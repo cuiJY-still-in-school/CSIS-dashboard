@@ -1314,43 +1314,37 @@ module.exports = {
       if (comp.type === 'Progress') {
         const { label = '', value = 0, max = 100, variant = 'default' } = props;
         const percentage = Math.max(0, Math.min(100, (value / max) * 100));
-        const progressClass = \`dashboard-progress \${variant !== 'default' ? 'dashboard-progress-' + variant : ''}\`;
-        return \`
-          <div class="\${progressClass}" data-component-type="Progress">
-            <div class="dashboard-progress-label">
-              <span>\${label}</span>
-              <span>\${Math.round(percentage)}%</span>
-            </div>
-            <div class="dashboard-progress-bar">
-              <div class="dashboard-progress-fill" style="width: \${percentage}%"></div>
-            </div>
-          </div>
-        \`;
+         const progressClass = 'dashboard-progress' + (variant !== 'default' ? ' dashboard-progress-' + variant : '');
+         return '<div class="' + progressClass + '" data-component-type="Progress">' +
+                '<div class="dashboard-progress-label">' +
+                '<span>' + label + '</span>' +
+                '<span>' + Math.round(percentage) + '%</span>' +
+                '</div>' +
+                '<div class="dashboard-progress-bar">' +
+                '<div class="dashboard-progress-fill" style="width: ' + percentage + '%"></div>' +
+                '</div>' +
+                '</div>';
        }
        
        // Slider component
        if (comp.type === 'Slider') {
          const { label = '', value = 0, min = 0, max = 100, step = 1, disabled = false } = props;
-         return \`
-           <div class="dashboard-slider-group" data-component-type="Slider">
-             \${label ? '<div class="dashboard-slider-label">' + label + '</div>' : ''}
-             <input class="dashboard-slider" type="range" 
-                    min="\${min}" max="\${max}" step="\${step}" value="\${value}"
-                    \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-             <div class="dashboard-slider-value">\${value}</div>
-           </div>
-         \`;
+          return '<div class="dashboard-slider-group" data-component-type="Slider">' +
+                 (label ? '<div class="dashboard-slider-label">' + label + '</div>' : '') +
+                 '<input class="dashboard-slider" type="range" ' +
+                 'min="' + min + '" max="' + max + '" step="' + step + '" value="' + value + '"' +
+                 (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                 '<div class="dashboard-slider-value">' + value + '</div>' +
+                 '</div>';
        }
        
        // Checkbox component
        if (comp.type === 'Checkbox') {
          const { label = '', checked = false, disabled = false } = props;
-         return \`
-           <label class="dashboard-checkbox" data-component-type="Checkbox">
-             <input type="checkbox" \${checked ? 'checked' : ''} \${disabled ? 'disabled' : ''} data-event-id="\${eventId || ''}">
-             \${label ? '<span class="dashboard-checkbox-label">' + label + '</span>' : ''}
-           </label>
-         \`;
+          return '<label class="dashboard-checkbox" data-component-type="Checkbox">' +
+                 '<input type="checkbox"' + (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + ' data-event-id="' + (eventId || '') + '">' +
+                 (label ? '<span class="dashboard-checkbox-label">' + label + '</span>' : '') +
+                 '</label>';
        }
        
        // Table component
@@ -1582,7 +1576,7 @@ module.exports = {
           '    </div>',
           '  </div>',
           '</div>'
-        ].join('\\n');
+         ].join('\n');
       }).join('');
       
       attachEventListeners();
@@ -1612,42 +1606,34 @@ module.exports = {
       
       // Check for React components first
       if (panel.components && panel.components.length > 0) {
-        return \`
-          <div style="display: flex; flex-direction: column; gap: 12px;">
-            \${panel.components.map((comp, index) => \`
-              <div style="background: rgba(100, 116, 139, 0.2); padding: 12px; border-radius: 6px; border-left: 3px solid #60a5fa;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                  <span style="font-weight: 600; color: #94a3b8;">\${comp.type || 'Component'}</span>
-                  \${comp.eventId ? '<span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">Interactive</span>' : ''}
-                  <span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">
-                    React
-                  </span>
-                </div>
-                <div style="font-size: 14px; color: #cbd5e1;">
-                  \${renderComponent(comp)}
-                </div>
-              </div>
-            \`).join('')}
-            <div style="font-size: 12px; color: #64748b; text-align: center; padding: 8px;">
-              React components ready (UI coming soon)
-            </div>
-          </div>
-        \`;
+        const componentsHtml = panel.components.map(comp => {
+          return '<div style="background: rgba(100, 116, 139, 0.2); padding: 12px; border-radius: 6px; border-left: 3px solid #60a5fa;">' +
+                 '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">' +
+                 '<span style="font-weight: 600; color: #94a3b8;">' + (comp.type || 'Component') + '</span>' +
+                 (comp.eventId ? '<span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">Interactive</span>' : '') +
+                 '<span style="font-size: 12px; color: #64748b; background: rgba(100, 116, 139, 0.3); padding: 2px 6px; border-radius: 4px;">React</span>' +
+                 '</div>' +
+                 '<div style="font-size: 14px; color: #cbd5e1;">' +
+                 renderComponent(comp) +
+                 '</div>' +
+                 '</div>';
+        }).join('');
+        return '<div style="display: flex; flex-direction: column; gap: 12px;">' +
+               componentsHtml +
+               '<div style="font-size: 12px; color: #64748b; text-align: center; padding: 8px;">React components ready (UI coming soon)</div>' +
+               '</div>';
       }
       
       // Fallback to data object
       if (panel.data && Object.keys(panel.data).length > 0) {
         const entries = Object.entries(panel.data);
-        return \`
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            \${entries.map(([key, value]) => \`
-              <div style="display: flex; justify-content: space-between; padding: 4px 0;">
-                <span style="color: #94a3b8;">\${key}:</span>
-                <span style="font-family: monospace;">\${formatValue(value)}</span>
-              </div>
-            \`).join('')}
-          </div>
-        \`;
+        const entriesHtml = entries.map(([key, value]) => {
+          return '<div style="display: flex; justify-content: space-between; padding: 4px 0;">' +
+                 '<span style="color: #94a3b8;">' + key + ':</span>' +
+                 '<span style="font-family: monospace;">' + formatValue(value) + '</span>' +
+                 '</div>';
+        }).join('');
+        return '<div style="display: flex; flex-direction: column; gap: 8px;">' + entriesHtml + '</div>';
       }
       
       return '<div class="placeholder">No configuration defined</div>';
